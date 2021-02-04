@@ -1,0 +1,28 @@
+{
+  "name": "coding_challenge",
+  "version": "1.0.0",
+  "description": "Prototype admin dashboard that collects and displays usage metrics submitted by a fakeIOT client.",
+  "main": "index.js",
+  "dependencies": {
+    "fetch-mock": "^9.11.0",
+    "jest": "^26.6.3",
+    "msw": "^0.26.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "jest-fetch-mock": "^3.0.3"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmo-personal/coding_challenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gmo-personal/coding_challenge/issues"
+  },
+  "homepage": "https://github.com/gmo-personal/coding_challenge#readme"
+}

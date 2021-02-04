@@ -1,0 +1,14 @@
+version: '3'
+services:
+  app:
+    environment:
+      - MYSQL_USERNAME=$db_user
+      - MYSQL_PASSWORD=$db_pass
+    build:
+      context: .
+    volumes:
+      - ".:/go/src/github.com/gmo-personal/coding_challenge"
+    container_name: golang_app
+    ports:
+      - "443:443"
+    tty: true
