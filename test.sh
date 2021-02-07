@@ -1,1 +1,1 @@
-go test ./database && npm test && echo "all tests passed"
+go test ./... && npm test && echo "all tests passed"

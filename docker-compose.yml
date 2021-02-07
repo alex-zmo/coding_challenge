@@ -4,11 +4,15 @@ services:
     environment:
       - MYSQL_USERNAME=$db_user
       - MYSQL_PASSWORD=$db_pass
+      - MYSQL_SCHEMA=$db_schema
+      - SRV_PORT=$srv_port
+      - SRV_CERT_PATH=$srv_cert_path
+      - SRV_KEY_PATH=$srv_key_path
     build:
       context: .
     volumes:
       - ".:/go/src/github.com/gmo-personal/coding_challenge"
-    container_name: golang_app
+    container_name: gmo-fullstack
     ports:
-      - "443:443"
+      - "${srv_port}:${srv_port}"
     tty: true

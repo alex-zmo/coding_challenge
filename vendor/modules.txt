@@ -1,0 +1,19 @@
+# github.com/DATA-DOG/go-sqlmock v1.5.0
+## explicit
+github.com/DATA-DOG/go-sqlmock
+# github.com/davecgh/go-spew v1.1.0
+github.com/davecgh/go-spew/spew
+# github.com/go-sql-driver/mysql v1.5.0
+## explicit
+github.com/go-sql-driver/mysql
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.7.0
+## explicit
+github.com/stretchr/testify/assert
+# golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+## explicit
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+gopkg.in/yaml.v3

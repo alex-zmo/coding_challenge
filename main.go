@@ -1,44 +1,56 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/gmo-personal/coding_challenge/database"
 	"github.com/gmo-personal/coding_challenge/model"
 	"github.com/gmo-personal/coding_challenge/server"
 	"github.com/gmo-personal/coding_challenge/server/utils"
 	"golang.org/x/crypto/bcrypt"
+	"os"
 )
 
 func main() {
-	database.InitDatabase()
-	err := AddBaseAccountIfNotExists()
+	db, err := database.InitDB()
 	if err != nil {
-			utils.LogError(err)
+		utils.LogError(err)
+		return
 	}
-	server.InitServer()
+
+	err = database.CreateAccountTable(db)
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
+
+	err = AddAccountIfNotExists(db, "testacct-0000-0000-0000-000000000000", "t@gmail.com", "t", 0)
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
+	server.InitServer(db)
 }
 
-func AddBaseAccountIfNotExists() error{
-	accountID := "testacct-0000-0000-0000-000000000000"
-	accountUsername := "t@gmail.com"
-
+// Adds an account if the account doesnt already exist.
+func AddAccountIfNotExists(db *sql.DB, id, username, password string, plan int) error {
 	// Checks if base account already added
-	existingAccount, err := database.SelectAccount(accountID)
+	existingAccount, err := database.SelectAccount(db, id)
 	if existingAccount != nil {
 		return nil
 	}
 
 	// Hardcoded Account for testing purposes. bcrypt library salts and hashes inputs.
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("t"), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-			return err
+		return err
 	}
 
 	// This is for fakeIOT test
-	err = database.InsertAccount(&model.Account{
-		ID:       accountID,
-		Username: accountUsername,
+	err = database.InsertAccount(db, &model.Account{
+		ID:       id,
+		Username: username,
 		Password: string(hashedPassword),
-		Plan:     0,
+		Plan:     plan,
 	})
 	return err
 }

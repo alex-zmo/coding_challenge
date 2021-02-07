@@ -5,6 +5,7 @@
     <meta name="author" content="Gravitational, Inc.">
     <link rel="stylesheet" type="text/css" href="../static/index.css">
     <script src="../static/scripts.js"></script>
+    <meta content="{{ .CSRFToken }}" name="csrf-token" />
 </head>
 
 <body>
@@ -21,15 +22,12 @@
     <input id="handle-submit" type="button" value="Login to my Dashboard" class="button block" >
 </form>
 
-<form id="restricted" name="restricted" style="display: none;">
-    <input id="X-CSRF-Token-input" name="X-CSRF-Token" />
-</form>
 <script nonce="EDNnf03nceIOfn39fn3e9h3sdfa">
 let submitButton = document.getElementById('handle-submit');
-submitButton.addEventListener('click', function (){handleSubmit()});
+submitButton.addEventListener('click', function (){submit()});
 document.getElementById('password').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
-        handleSubmit();
+        submit();
     }
 });
 </script>

@@ -1,11 +1,12 @@
 package database
 
 import (
+	"database/sql"
 	"github.com/gmo-personal/coding_challenge/model"
 )
 
 // Updates account plan.
-func UpdateAccount(account *model.Account) error {
+func UpdateAccount(db *sql.DB, account *model.Account) error {
 	updateAccountStmt := `UPDATE account SET plan = ? WHERE id = ?;`
 	_, err := db.Exec(
 		updateAccountStmt,

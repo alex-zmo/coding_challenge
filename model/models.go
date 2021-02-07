@@ -13,6 +13,7 @@ type DashboardPage struct {
 	CSRFToken string
 }
 
-// Structure for Index(login) page.
+// Structure for Index(login) page, including CSRF token to be injected.
 type IndexPage struct {
+	CSRFToken string
 }

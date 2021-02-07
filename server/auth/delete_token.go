@@ -1,22 +1,29 @@
 package auth
 
 import (
+	"errors"
 	"github.com/gmo-personal/coding_challenge/server/utils"
 	"net/http"
 	"time"
 )
 
-
 // Sends response to nullify the cookies and deletes the tokens from sessions.
-func NullifyTokens(w http.ResponseWriter, r *http.Request) {
+func DeleteTokenHandler(w http.ResponseWriter, r *http.Request) {
 	// Attempt to extract the token from the cookie, returns and error if fails.
-	authToken, err := utils.ExtractTokenFromCookie( authCookieName, r)
+	authTokenCookie, err := r.Cookie(authCookieName)
 	if err != nil {
-			utils.LogError(err)
-			utils.ServeInternalServerError(w)
-			return
+		utils.LogError(err)
+		utils.ServeInternalServerError(w)
 	}
-	delete(Sessions, authToken)
+	// Retrieves sessions from context.
+	sess, ok := r.Context().Value("sess").(map[string]Session)
+	if !ok {
+		utils.LogError(errors.New("sess unset"))
+		utils.ServeInternalServerError(w)
+		return
+	}
+	authToken := authTokenCookie.Value
+	delete(sess, authToken)
 
 	// Sets auth cookie expire time to -1000 hours from now time with no value.
 	authCookie := http.Cookie{

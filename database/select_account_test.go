@@ -8,10 +8,8 @@ import (
 
 //TODO could add more functional tests on SelectAccountByUsername
 
-// Happy Path
-func TestSelectAccount(t *testing.T) {
-	var mock sqlmock.Sqlmock
-	db, mock = NewMock()
+func TestSelectAccountSuccess(t *testing.T) {
+	db, mock := NewMock(t)
 
 	query := `SELECT 
 			id, 
@@ -31,7 +29,7 @@ func TestSelectAccount(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	account, err := SelectAccount(id)
+	account, err := SelectAccount(db, id)
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
 	assert.Equal(t, account.ID, id)
@@ -40,11 +38,8 @@ func TestSelectAccount(t *testing.T) {
 	assert.Equal(t, account.Plan, plan)
 }
 
-
-// Unhappy Path
-func TestSelectAccount2(t *testing.T) {
-	var mock sqlmock.Sqlmock
-	db, mock = NewMock()
+func TestSelectAccountFailure(t *testing.T) {
+	db, mock := NewMock(t)
 
 	query := `SELECT 
 			id, 
@@ -58,9 +53,7 @@ func TestSelectAccount2(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	account, err := SelectAccount("non-existant-account")
+	account, err := SelectAccount(db, "non-existant-account")
 	assert.Nil(t, account)
 	assert.Error(t, err)
 }
-
-

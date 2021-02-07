@@ -8,10 +8,8 @@ import (
 	"testing"
 )
 
-// Happy Path
-func TestUpdateUser(t *testing.T) {
-	var mock sqlmock.Sqlmock
-	db, mock = NewMock()
+func TestUpdateUserSuccess(t *testing.T) {
+	db, mock := NewMock(t)
 
 	stmt := `UPDATE account 
 		SET 
@@ -24,20 +22,19 @@ func TestUpdateUser(t *testing.T) {
 	).WillReturnResult(sqlmock.NewResult(1, 1))
 
 	accInfo := &model.Account{
-		ID:      "testacct-0000-0000-0000-000000000000",
+		ID:       "testacct-0000-0000-0000-000000000000",
 		Username: "",
 		Password: "",
 		Plan:     1,
 	}
 
-	err := UpdateAccount(accInfo)
+	err := UpdateAccount(db, accInfo)
 	assert.NoError(t, err)
 }
 
 // Unhappy Path
-func TestUpdateUser2(t *testing.T) {
-	var mock sqlmock.Sqlmock
-	db, mock = NewMock()
+func TestUpdateUserFailure(t *testing.T) {
+	db, mock := NewMock(t)
 
 	stmt := `UPDATE account 
 		SET plan \= \?
@@ -46,12 +43,12 @@ func TestUpdateUser2(t *testing.T) {
 	mock.ExpectExec(stmt).WillReturnError(errors.New("error"))
 
 	accInfo := &model.Account{
-		ID:      "",
+		ID:       "",
 		Username: "",
 		Password: "",
 		Plan:     1,
 	}
 
-	err := UpdateAccount(accInfo)
+	err := UpdateAccount(db, accInfo)
 	assert.Error(t, err)
 }

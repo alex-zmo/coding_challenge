@@ -1,11 +1,12 @@
 package database
 
 import (
+	"database/sql"
 	"github.com/gmo-personal/coding_challenge/model"
 )
 
 // Inserts an account.
-func InsertAccount(accountInfo *model.Account) error {
+func InsertAccount(db *sql.DB, accountInfo *model.Account) error {
 	insertAccountStmt := `INSERT INTO account (
 		id,
 		username,

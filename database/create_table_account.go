@@ -1,7 +1,9 @@
 package database
 
+import "database/sql"
+
 // Creates account table.
-func createAccountTable() error {
+func CreateAccountTable(db *sql.DB) error {
 	createAccountStmt := `CREATE TABLE IF NOT EXISTS account (
 		id VARCHAR(36) NOT NULL ,
 		username VARCHAR(256) NOT NULL,
