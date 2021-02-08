@@ -13,19 +13,20 @@ import (
 func main() {
 	db, err := database.InitDB()
 	if err != nil {
-		utils.LogError(err)
-		return
+		utils.Logger.Println(err)
+		os.Exit(1)
 	}
+	defer db.Close()
 
 	err = database.CreateAccountTable(db)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		os.Exit(1)
 	}
 
 	err = AddAccountIfNotExists(db, "testacct-0000-0000-0000-000000000000", "t@gmail.com", "t", 0)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		os.Exit(1)
 	}
 	server.InitServer(db)

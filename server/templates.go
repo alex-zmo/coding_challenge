@@ -13,7 +13,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, p interface{}) {
 	// Renders page from template, if failed, returns internal server error.
 	err := templates.ExecuteTemplate(w, tmpl+".tmpl", p)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeInternalServerError(w)
 	}
 }

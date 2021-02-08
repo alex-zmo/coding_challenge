@@ -5,6 +5,8 @@ services:
       - MYSQL_USERNAME=$db_user
       - MYSQL_PASSWORD=$db_pass
       - MYSQL_SCHEMA=$db_schema
+      - MYSQL_HOST=$db_host
+      - MYSQL_PORT=$db_port
       - SRV_PORT=$srv_port
       - SRV_CERT_PATH=$srv_cert_path
       - SRV_KEY_PATH=$srv_key_path

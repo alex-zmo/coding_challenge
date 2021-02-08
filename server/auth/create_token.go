@@ -26,7 +26,7 @@ func PostTokenHandler(w http.ResponseWriter, r *http.Request) {
 	// Verifies that the CSRF cookie and header match. If they do not match, the request is unauthorized.
 	err := csrf.VerifyCSRF(r)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeUnauthorized(w)
 		return
 	}
@@ -34,57 +34,57 @@ func PostTokenHandler(w http.ResponseWriter, r *http.Request) {
 	// Attempts to read the body, if unable to do so, return bad request.
 	accountJson, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeBadRequest(w)
 		return
 	}
+	defer r.Body.Close()
 
 	// Attempts to parse json into account model, if unable to do so, return bad request.
 	account := &model.Account{}
 	err = json.Unmarshal(accountJson, account)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeBadRequest(w)
 		return
 	}
 	// Retrieves db from context.
 	db, ok := r.Context().Value("db").(*sql.DB)
 	if !ok {
-		utils.LogError(errors.New("db unset"))
+		utils.Logger.Println(errors.New("db unset"))
 		utils.ServeInternalServerError(w)
 		return
 	}
 	// Attempts to find an existing account by username and compares input and existing passwords,
 	// Serves unauthorized if they do not match.
 	existingAccount, err := database.SelectAccountByUsername(db, account.Username)
-	if existingAccount != nil {
-		// Uses bcrypt library to compare the passwords, returns unauthorized if comparison fails.
-		err = bcrypt.CompareHashAndPassword([]byte(existingAccount.Password), []byte(account.Password))
-		if err != nil {
-			utils.LogError(err)
-			utils.ServeUnauthorized(w)
-			return
-		}
-		// Retrieves sessions from context.
-		sess, ok := r.Context().Value("sess").(map[string]Session)
-		if !ok {
-			utils.LogError(errors.New("sess unset"))
-			utils.ServeInternalServerError(w)
-			return
-		}
-		// Attempts to create an auth token for the account, serves internal server error on fail.
-		authToken, err := createAuth(existingAccount.ID, sess)
-		if err != nil {
-			utils.LogError(err)
-			utils.ServeInternalServerError(w)
-			return
-		}
-		// Sends response to save the cookie.
-		utils.SaveCookie(authCookieName, authToken, w)
+	if err != nil {
+		utils.Logger.Println(err)
+		utils.ServeUnauthorized(w)
+	}
+	// Uses bcrypt library to compare the passwords, returns unauthorized if comparison fails.
+	err = bcrypt.CompareHashAndPassword([]byte(existingAccount.Password), []byte(account.Password))
+	if err != nil {
+		utils.Logger.Println(err)
+		utils.ServeUnauthorized(w)
 		return
 	}
-	utils.LogError(err)
-	utils.ServeUnauthorized(w)
+	// Retrieves sessions from context.
+	sess, ok := r.Context().Value("sess").(map[string]Session)
+	if !ok {
+		utils.Logger.Println(errors.New("sess unset"))
+		utils.ServeInternalServerError(w)
+		return
+	}
+	// Attempts to create an auth token for the account, serves internal server error on fail.
+	authToken, err := createAuth(existingAccount.ID, sess)
+	if err != nil {
+		utils.Logger.Println(err)
+		utils.ServeInternalServerError(w)
+		return
+	}
+	// Sends response to save the cookie.
+	utils.SaveCookie(authCookieName, authToken, w)
 }
 
 // Creates an auth token.

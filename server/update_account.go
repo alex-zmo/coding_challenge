@@ -18,7 +18,7 @@ func patchAccountHandler(w http.ResponseWriter, r *http.Request) {
 	// Verifies that the CSRF cookie and header match. If they do not match, the request is unauthorized.
 	err := csrf.VerifyCSRF(r)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeUnauthorized(w)
 		return
 	}
@@ -27,7 +27,7 @@ func patchAccountHandler(w http.ResponseWriter, r *http.Request) {
 	// otherwise the request is unauthorized.
 	accountID, err := auth.ValidateToken(r)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeUnauthorized(w)
 		return
 	}
@@ -35,23 +35,24 @@ func patchAccountHandler(w http.ResponseWriter, r *http.Request) {
 	// Attempts to read the body, if unable to do so, return bad request.
 	accountJson, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeBadRequest(w)
 		return
 	}
+	defer r.Body.Close()
 
 	// Attempts to parse json into account model, if unable to do so, return bad request.
 	newAccount := &model.Account{}
 	err = json.Unmarshal(accountJson, newAccount)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeBadRequest(w)
 		return
 	}
 	// Retrieves db from context.
 	db, ok := r.Context().Value("db").(*sql.DB)
 	if !ok {
-		utils.LogError(errors.New("db unset"))
+		utils.Logger.Println(errors.New("db unset"))
 		utils.ServeInternalServerError(w)
 		return
 	}
@@ -60,7 +61,7 @@ func patchAccountHandler(w http.ResponseWriter, r *http.Request) {
 	// if not, return not found.
 	existingAccount, err := database.SelectAccount(db, accountID)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeUnauthorized(w)
 		return
 	}
@@ -68,12 +69,16 @@ func patchAccountHandler(w http.ResponseWriter, r *http.Request) {
 	// Validates plan, updates the existing account's plan to the new plan.
 	if newAccount.Plan == 0 || newAccount.Plan == 1 {
 		existingAccount.Plan = newAccount.Plan
+	} else {
+		utils.Logger.Println(errors.New("invalid plan"))
+		utils.ServeBadRequest(w)
+		return
 	}
 
 	// Updates the account plan in the database.
 	err = database.UpdateAccount(db, existingAccount)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeInternalServerError(w)
 		return
 	}

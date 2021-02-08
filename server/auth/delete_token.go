@@ -12,13 +12,13 @@ func DeleteTokenHandler(w http.ResponseWriter, r *http.Request) {
 	// Attempt to extract the token from the cookie, returns and error if fails.
 	authTokenCookie, err := r.Cookie(authCookieName)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		utils.ServeInternalServerError(w)
 	}
 	// Retrieves sessions from context.
 	sess, ok := r.Context().Value("sess").(map[string]Session)
 	if !ok {
-		utils.LogError(errors.New("sess unset"))
+		utils.Logger.Println(errors.New("sess unset"))
 		utils.ServeInternalServerError(w)
 		return
 	}
@@ -37,7 +37,7 @@ func DeleteTokenHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &authCookie)
 
 	// Sets CSRF cookie expire time to -1000 hours from now time with no value.
-	CSRFCookie := http.Cookie{
+	csrfCookie := http.Cookie{
 		Name:     csrfCookieName,
 		Value:    "",
 		Expires:  time.Now().Add(-1000 * time.Hour),
@@ -46,5 +46,5 @@ func DeleteTokenHandler(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 	}
 
-	http.SetCookie(w, &CSRFCookie)
+	http.SetCookie(w, &csrfCookie)
 }

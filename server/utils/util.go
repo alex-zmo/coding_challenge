@@ -12,12 +12,7 @@ import (
 	"strings"
 )
 
-var l = log.New(os.Stderr, "", log.Ldate)
-
-// Logs error to Stderr.
-func LogError(err error) {
-	l.Println(err)
-}
+var Logger = log.New(os.Stderr, "", log.Ldate)
 
 // Generates Random string using crypto/rand.
 func CryptoRandomString(len int) (string, error) {
@@ -65,13 +60,13 @@ func SaveCookie(cookieName, token string, w http.ResponseWriter) {
 func ServeJson(w http.ResponseWriter, obj interface{}) {
 	data, err := json.Marshal(obj)
 	if err != nil {
-		LogError(err)
+		Logger.Println(err)
 		ServeInternalServerError(w)
 		return
 	}
 	_, err = w.Write(data)
 	if err != nil {
-		LogError(err)
+		Logger.Println(err)
 		ServeInternalServerError(w)
 		return
 	}

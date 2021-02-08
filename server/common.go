@@ -48,7 +48,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		csrfToken, err := csrf.CreateCSRF(w, r)
 		if err != nil {
-			utils.LogError(err)
+			utils.Logger.Println(err)
 			utils.ServeInternalServerError(w)
 			return
 		}
@@ -64,13 +64,13 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		_, err := auth.ValidateToken(r)
 		if err != nil {
-			utils.LogError(err)
+			utils.Logger.Println(err)
 			utils.ServeUnauthorized(w)
 			return
 		}
 		csrfCookie, err := r.Cookie(csrfCookieName)
 		if err != nil {
-			utils.LogError(err)
+			utils.Logger.Println(err)
 			utils.ServeInternalServerError(w)
 			return
 		}
@@ -120,7 +120,7 @@ func InitServer(db *sql.DB) {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("server/static"))))
 	err := http.ListenAndServeTLS(":"+port, certPath, keyPath, nil)
 	if err != nil {
-		utils.LogError(err)
+		utils.Logger.Println(err)
 		return
 	}
 }

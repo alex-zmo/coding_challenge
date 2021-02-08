@@ -22,7 +22,7 @@ Run the following command to spin up the docker container. The site can be acces
 
 replace \<username> and \<password> with local mysql database username and password respectively.
 
-`srv_port=443 srv_cert_path=certs/server-cert.pem srv_key_path=certs/server-key.pem db_user=<username> db_pass=<password> db_schema=<schema name> docker-compose up --build`
+`srv_port=443 srv_cert_path=certs/server-cert.pem srv_key_path=certs/server-key.pem db_user=<username> db_pass=<password> db_schema=<schema name> db_host=host.docker.internal db_port=3306 docker-compose up --build`
 
 ### Run tests:
 
