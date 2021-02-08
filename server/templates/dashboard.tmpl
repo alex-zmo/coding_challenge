@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>User Management Challenge</title>
+    <meta name="author" content="Gravitational, Inc.">
+    <link rel="stylesheet" type="text/css" href="../static/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="../static/scripts.js"></script>
+    <meta content="{{ .CSRFToken }}" name="csrf-token" />
+</head>
+
+<body>
+<header class="top-nav">
+    <h1>
+        <i class="material-icons">supervised_user_circle</i>
+        User Management Dashboard
+    </h1>
+    <button id="button-logout" class="button is-border">Logout</button>
+</header>
+
+<div id="alert-error" class="alert is-error">You have exceeded the maximum number of users for your account, please upgrade your plan to increase the limit.</div>
+<div id="alert-success" class="alert is-success">Your account has been upgraded successfully!</div>
+
+<div class="plan">
+    <header id="plan-header">Startup Plan - $100/Month</header>
+
+    <div class="plan-content">
+        <div class="progress-bar">
+            <div id="progress-bar-current" style="width: 0%" class="progress-bar-usage"></div>
+        </div>
+
+        <h3 id="filled-capacity">Users: 0/100</h3>
+    </div>
+
+    <footer>
+        <button id="upgrade-enterprise" class="button is-success">Upgrade to Enterprise Plan</button>
+    </footer>
+</div>
+
+<script nonce="afds3h9e3nf93nf0Iecn30fnNDE">
+document.getElementById("upgrade-enterprise").addEventListener("click", function() {upgrade()})
+document.getElementById("button-logout").addEventListener("click", function() {logout()})
+</script>
+
+</body>
+</html>
