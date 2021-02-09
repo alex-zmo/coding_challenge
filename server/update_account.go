@@ -59,7 +59,7 @@ func patchAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Checks to see if there is an existing account of the same account ID in the database,
 	// if not, return not found.
-	existingAccount, err := database.SelectAccount(db, accountID)
+	existingAccount, err := database.SelectAccount(nil, db, accountID)
 	if err != nil {
 		utils.Logger.Println(err)
 		utils.ServeUnauthorized(w)

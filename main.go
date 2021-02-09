@@ -24,6 +24,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	err = database.CreateMetricTable(db)
+	if err != nil {
+		utils.Logger.Println(err)
+		os.Exit(1)
+	}
+
 	err = AddAccountIfNotExists(db, "testacct-0000-0000-0000-000000000000", "t@gmail.com", "t", 0)
 	if err != nil {
 		utils.Logger.Println(err)
@@ -35,7 +41,7 @@ func main() {
 // Adds an account if the account doesnt already exist.
 func AddAccountIfNotExists(db *sql.DB, id, username, password string, plan int) error {
 	// Checks if base account already added
-	existingAccount, err := database.SelectAccount(db, id)
+	existingAccount, err := database.SelectAccount(nil, db, id)
 	if existingAccount != nil {
 		return nil
 	}

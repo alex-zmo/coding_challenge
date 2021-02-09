@@ -5,8 +5,8 @@ import (
 	"github.com/gmo-personal/coding_challenge/model"
 )
 
-// Selects an account based on account ID.
-func SelectAccount(db *sql.DB, id string) (*model.Account, error) {
+// Selects an account based on account ID as part of a transaction if tx is not nil, otherwise executes regularly.
+func SelectAccount(tx *sql.Tx, db *sql.DB, id string) (*model.Account, error) {
 	selectAccountStmt := `
 		SELECT 
 			id, 
@@ -16,11 +16,20 @@ func SelectAccount(db *sql.DB, id string) (*model.Account, error) {
 		FROM account
 		WHERE id = ? FOR UPDATE;`
 
+	var err error
 	account := &model.Account{}
-	err := db.QueryRow(selectAccountStmt, id).Scan(&account.ID,
-		&account.Username,
-		&account.Password,
-		&account.Plan)
+	if tx == nil {
+		err = db.QueryRow(selectAccountStmt, id).Scan(&account.ID,
+			&account.Username,
+			&account.Password,
+			&account.Plan)
+	} else {
+		err = tx.QueryRow(selectAccountStmt, id).Scan(&account.ID,
+			&account.Username,
+			&account.Password,
+			&account.Plan)
+	}
+
 	if err != nil {
 		return nil, err
 	}
