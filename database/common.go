@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
-	"github.com/gmo-personal/coding_challenge/server/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"os"
 )
@@ -23,11 +23,10 @@ func InitDB() (db *sql.DB, err error) {
 	return db, nil
 }
 
-func closeRows(rows *sql.Rows) {
-	err := rows.Close()
-	if err != nil {
-		utils.Logger.Println(err)
-	}
+// Interface to take in *sql.Tx or *sql.DB.
+type Caller interface {
+	QueryRow(query string, args ...interface{}) *sql.Row
+	Exec(query string, args ...interface{}) (sql.Result, error)
 }
 
 // Begins db transaction.
@@ -36,13 +35,14 @@ func StartTransaction(db *sql.DB) (*sql.Tx, error) {
 }
 
 // Commits or Rollbacks a db transaction.
-func ResolveTransaction(tx *sql.Tx) {
+func ResolveTransaction(tx *sql.Tx) error {
 	err := tx.Commit()
 	if err != nil {
-		utils.Logger.Println(err)
 		err = tx.Rollback()
 		if err != nil {
-			utils.Logger.Println(err)
+			return err
 		}
+		return errors.New("transaction commit failed")
 	}
+	return nil
 }

@@ -17,7 +17,7 @@ func TestSelectMetricSuccess(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	count, err := CountMetrics(nil, db, id)
+	count, err := CountMetrics(db, id)
 	assert.NoError(t, err)
 	assert.NotNil(t, count)
 	assert.Equal(t, 1, count)
@@ -30,7 +30,7 @@ func TestSelectMetricFailure(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnError(errors.New("no rows found"))
 
-	count, err := CountMetrics(nil, db, "non-existent-account")
+	count, err := CountMetrics(db, "non-existent-account")
 	assert.Equal(t, count, -1)
 	assert.Error(t, err)
 }

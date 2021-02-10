@@ -30,7 +30,7 @@ func TestInsertMetricSuccess(t *testing.T) {
 		Timestamp: "2021-02-07 17:25:39",
 	}
 
-	err := InsertMetric(nil, db, metricsInfo)
+	err := InsertMetric(db, metricsInfo)
 	assert.NoError(t, err)
 }
 
@@ -45,6 +45,6 @@ func TestInsertMetricFailure(t *testing.T) {
 
 	mock.ExpectExec(stmt).WillReturnError(errors.New("error"))
 	metricsInfo := &model.Metric{}
-	err := InsertMetric(nil, db, metricsInfo)
+	err := InsertMetric(db, metricsInfo)
 	assert.Error(t, err)
 }

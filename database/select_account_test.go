@@ -29,7 +29,7 @@ func TestSelectAccountSuccess(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	account, err := SelectAccount(nil, db, id)
+	account, err := SelectAccount(db, id)
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
 	assert.Equal(t, account.ID, id)
@@ -53,7 +53,7 @@ func TestSelectAccountFailure(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	account, err := SelectAccount(nil, db, "non-existent-account")
+	account, err := SelectAccount(db, "non-existent-account")
 	assert.Nil(t, account)
 	assert.Error(t, err)
 }

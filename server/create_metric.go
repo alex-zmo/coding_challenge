@@ -63,45 +63,49 @@ func postMetricHandler(w http.ResponseWriter, r *http.Request) {
 		utils.ServeInternalServerError(w)
 		return
 	}
-
-	// Begins database transaction, serves error if failed.
+	// Begins database transaction.
 	tx, err := database.StartTransaction(db)
 	if err != nil {
 		utils.Logger.Println(err)
 		utils.ServeInternalServerError(w)
 		return
 	}
-
-	// Defers the transaction commit / rollback till end of function
-	defer database.ResolveTransaction(tx)
-	// Checks to see if there is an existing account of the same account ID in the database,
-	// if not, return not found.
-	existingAccount, err := database.SelectAccount(tx, db, metric.AccountID)
-	if err != nil {
-		utils.Logger.Println(err)
-		utils.ServeUnauthorized(w)
-		return
-	}
-
-	// Returns count of metrics associated with account ID,serves internal server error if failed.
-	metricsCount, err := database.CountMetrics(tx, db, metric.AccountID)
-	if err != nil {
-		utils.Logger.Println(err)
-		utils.ServeInternalServerError(w)
-		return
-	}
-
-	// Checks if able to insert metric based on plan and count, otherwise serve forbidden.
-	if metricsCount < 100 || existingAccount.Plan == 1 && metricsCount < 1000 {
-		// Inserts new metric, serves internal server error if failed.
-		err = database.InsertMetric(tx, db, metric)
-		if err != nil {
-			utils.Logger.Println(err)
-			utils.ServeInternalServerError(w)
-			return
-		}
-		utils.ServeCreated(w)
-	} else {
+	// error if there is an error in any steps of the transaction.
+	txErr := InsertMetricsTransaction(tx, metric)
+	// error if there is an error in committing or resolving the transaction.
+	resErr := database.ResolveTransaction(tx)
+	if txErr != nil  {
+		utils.Logger.Println(txErr)
 		utils.ServeForbidden(w)
+		return
 	}
+	if resErr != nil  {
+		utils.Logger.Println(resErr)
+		utils.ServeForbidden(w)
+		return
+	}
+	utils.ServeCreated(w)
+}
+
+// Runs a metrics insert transaction.
+func InsertMetricsTransaction(tx *sql.Tx, metric *model.Metric) error {
+	// Checks to see if there is an existing account of the same account ID in the database.
+	existingAccount, err := database.SelectAccount(tx, metric.AccountID)
+	if err != nil {
+		return err
+	}
+
+	// Returns count of metrics associated with account ID.
+	metricsCount, err := database.CountMetrics(tx, metric.AccountID)
+	if err != nil {
+		return err
+	}
+
+	// Checks if able to insert metric based on plan and count, otherwise returns forbidden.
+	if metricsCount >= 100 && existingAccount.Plan == 0 ||  metricsCount >= 1000 {
+		return errors.New(http.StatusText(http.StatusForbidden))
+	}
+	// Inserts new metric, returns error if failed or nil if successful.
+	err = database.InsertMetric(tx, metric)
+	return err
 }

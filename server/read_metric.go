@@ -53,12 +53,12 @@ func getMetricHandler(w http.ResponseWriter, r *http.Request) {
 // Gets the metrics count and account plan associated with an account.
 func getDashboardInfo(db *sql.DB, accountID string) (*model.DashboardInfo, error) {
 	// Gets the account associated with an account ID.
-	existingAccount, err := database.SelectAccount(nil, db, accountID)
+	existingAccount, err := database.SelectAccount(db, accountID)
 	if err != nil {
 		return nil, err
 	}
 	// Gets the metrics count associated with an account ID.
-	metricCount, err := database.CountMetrics(nil, db, accountID)
+	metricCount, err := database.CountMetrics(db, accountID)
 	if err != nil {
 		return nil, err
 	}
