@@ -42,3 +42,13 @@ username: `t@gmail.com`
 
 password: `t`
 
+### Running with FakeIOT
+
+The following is the hard coded bearer token. It is a randomly generated
+len 32 string.
+
+`0b2a4a30602b7f6d1079593cabfdb9386eff2041b863a9c678915158eb60fdac`
+
+Sample full command:
+
+`fakeiot --token=0b2a4a30602b7f6d1079593cabfdb9386eff2041b863a9c678915158eb60fdac --url="https://127.0.0.1:443" --ca-cert=./fixtures/ca-cert.pem run --period=9s --freq=0.1s --users=90 --account-id=testacct-0000-0000-0000-000000000000`

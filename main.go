@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	// Initializes database connection
 	db, err := database.InitDB()
 	if err != nil {
 		utils.Logger.Println(err)
@@ -18,12 +19,19 @@ func main() {
 	}
 	defer db.Close()
 
+	// Creates account table if it does not already exist.
 	err = database.CreateAccountTable(db)
 	if err != nil {
 		utils.Logger.Println(err)
 		os.Exit(1)
 	}
-
+	// Creates metrics table if it does not already exist.
+	err = database.CreateMetricTable(db)
+	if err != nil {
+		utils.Logger.Println(err)
+		os.Exit(1)
+	}
+	// Adds base account if it does not already exist.
 	err = AddAccountIfNotExists(db, "testacct-0000-0000-0000-000000000000", "t@gmail.com", "t", 0)
 	if err != nil {
 		utils.Logger.Println(err)

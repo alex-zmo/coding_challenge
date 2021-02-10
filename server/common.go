@@ -42,6 +42,17 @@ func tokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func metricsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		postMetricHandler(w, r)
+	case http.MethodGet:
+		getMetricHandler(w, r)
+	default:
+		utils.ServeMethodNotAllowed(w)
+	}
+}
+
 // Renders login page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -107,18 +118,15 @@ func injectSessions(sess map[string]auth.Session, next http.HandlerFunc) http.Ha
 
 // Initializes server.
 func InitServer(db *sql.DB) {
-	port := os.Getenv("SRV_PORT")
-	certPath := os.Getenv("SRV_CERT_PATH")
-	keyPath := os.Getenv("SRV_KEY_PATH")
-
 	sess := make(map[string]auth.Session)
 	http.HandleFunc("/", csp(indexHandler))
 	http.HandleFunc("/account/", injectSessions(sess, injectDB(db, csp(accountHandler))))
 	http.HandleFunc("/dashboard", injectSessions(sess, csp(dashboardHandler)))
 	http.HandleFunc("/token/", injectSessions(sess, injectDB(db, csp(tokenHandler))))
+	http.HandleFunc("/metrics", injectSessions(sess, injectDB(db, csp(metricsHandler))))
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("server/static"))))
-	err := http.ListenAndServeTLS(":"+port, certPath, keyPath, nil)
+	err := http.ListenAndServeTLS(":"+os.Getenv("SRV_PORT"), os.Getenv("SRV_CERT_PATH"), os.Getenv("SRV_KEY_PATH"), nil)
 	if err != nil {
 		utils.Logger.Println(err)
 		return

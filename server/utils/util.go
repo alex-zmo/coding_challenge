@@ -72,6 +72,10 @@ func ServeJson(w http.ResponseWriter, obj interface{}) {
 	}
 }
 
+func ServeCreated(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusCreated)
+}
+
 func ServeBadRequest(w http.ResponseWriter) {
 	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 }
@@ -81,7 +85,7 @@ func ServeUnauthorized(w http.ResponseWriter) {
 }
 
 func ServeForbidden(w http.ResponseWriter) {
-	http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	w.WriteHeader(http.StatusForbidden)
 }
 
 func ServeMethodNotAllowed(w http.ResponseWriter) {

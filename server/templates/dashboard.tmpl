@@ -19,8 +19,8 @@
     <button id="button-logout" class="button is-border">Logout</button>
 </header>
 
-<div id="alert-error" class="alert is-error">You have exceeded the maximum number of users for your account, please upgrade your plan to increase the limit.</div>
-<div id="alert-success" class="alert is-success">Your account has been upgraded successfully!</div>
+<div id="alert-error" class="collapse alert is-error">You have exceeded the maximum number of users for your account, please upgrade your plan to increase the limit.</div>
+<div id="alert-success" class="collapse alert is-success">Your account has been upgraded successfully!</div>
 
 <div class="plan">
     <header id="plan-header">Startup Plan - $100/Month</header>
@@ -34,11 +34,12 @@
     </div>
 
     <footer>
-        <button id="upgrade-enterprise" class="button is-success">Upgrade to Enterprise Plan</button>
+        <button id="upgrade-enterprise" class="collapse button is-success">Upgrade to Enterprise Plan</button>
     </footer>
 </div>
 
 <script nonce="afds3h9e3nf93nf0Iecn30fnNDE">
+window.addEventListener('DOMContentLoaded', poll, false)
 document.getElementById("upgrade-enterprise").addEventListener("click", function() {upgrade()})
 document.getElementById("button-logout").addEventListener("click", function() {logout()})
 </script>
